@@ -4,6 +4,7 @@ import top from "../assets/top.svg";
 import styles from "./venta-resumen.module.css";
 import { useCajaStore } from "../store/caja";
 import { useEffect } from "react";
+import { RealizarVentaComponent } from "./venta-realizar-venta";
 
 export const VentaResumenComponent = () => {
   const resumen = useCajaStore((state) => state.resumen);
@@ -68,6 +69,7 @@ export const VentaResumenComponent = () => {
           </Box>
         </Box>
       </Paper>
+      <RealizarVentaComponent/>
     </Container>
   );
 };

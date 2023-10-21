@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { Button, TextField, Stack, Box, MenuItem } from "@mui/material";
 import { useProductosStore } from "../store/producto";
 import { useCategoriaStore } from "../store/categoria";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 /**
  * @typedef { import('../models/producto').CreateProductoFormValues } CreateProductoFormValues
@@ -11,9 +11,13 @@ import { useEffect } from "react";
 
 export const AgregarProductosComponent = () => {
   const categorias = useCategoriaStore((state) => state.categorias);
-  const lastProducts = useProductosStore(
+  const getLastProducts = useProductosStore(
     (state) => state.getLastTenProductosOrderByIdDesc
-  )();
+  );
+  const fetchProductos = useProductosStore((state) => state.fetchProductos);
+
+  const [lastProducts, setLastProducts] = useState(getLastProducts())
+
   /** @type {useForm<CreateProductoFormValues>} */
   const form = useForm({
     defaultValues: {
@@ -34,14 +38,51 @@ export const AgregarProductosComponent = () => {
   const watchRin = watch("rin");
   const watchMarca = watch("marca");
 
-  const onSubmit = (data) => {
-    console.log(data);
+  const onSubmit = async (data) => {
+    const apiUrl = 'http://localhost:3000/productos';
+
+    data.precio_unitario = parseFloat(data.precio_unitario)
+    data.precio_descuento = parseFloat(data.precio_descuento)
+    data.rin = parseFloat(data.rin)
+    data.existencia = parseFloat(data.existencia)
+
+  
+    const requestOptions = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    };
+  
+    try {
+      const response = await fetch(apiUrl, requestOptions);
+  
+      if (!response.ok) {
+        throw new Error(`Error de red: ${response.status}`);
+      }
+  
+      const responseData = await response.json();
+      await fetchProductos()
+      setLastProducts(getLastProducts())
+      console.log('Respuesta exitosa:', responseData);
+      
+  
+    } catch (error) {
+      console.error('Error al realizar la solicitud:', error);
+    }
   };
 
   useEffect(() => {
       const descripcion = `${watchMedida ?? ''} R${watchRin ?? ''} ${watchMarca ?? ''}`;
       setValue("descripcion", descripcion);
   }, [watchMedida, watchRin, watchMarca, setValue]);
+
+  useEffect(() => {
+    fetchProductos()
+  })
+
+ 
 
   return (
     <>
@@ -97,12 +138,14 @@ export const AgregarProductosComponent = () => {
               label="Precio Unitario"
               variant="outlined"
               fullWidth
+              type="number"
               {...form.register("precio_unitario")}
             />
             <TextField
               label="Precio Descuento"
               variant="outlined"
               fullWidth
+              type="number"
               {...form.register("precio_descuento")}
             />
             <Button variant="contained" color="primary" fullWidth type="submit">
