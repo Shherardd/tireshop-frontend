@@ -23,16 +23,18 @@ export const AgregarProductosComponent = () => {
     defaultValues: {
       categoria_id: 1,
       descripcion: null,
+      detalle: null,
       medida: null,
       rin: null,
       marca: null,
+      modelo: null,
       existencia: null,
       precio_unitario: null,
       precio_descuento: null,
     },
   });
 
-  const { handleSubmit, watch, setValue } = form;
+  const { handleSubmit, watch, setValue, reset } = form;
 
   const watchMedida = watch("medida");
   const watchRin = watch("rin");
@@ -65,6 +67,7 @@ export const AgregarProductosComponent = () => {
       const responseData = await response.json();
       await fetchProductos()
       setLastProducts(getLastProducts())
+      reset()
       console.log('Respuesta exitosa:', responseData);
       
   
@@ -123,10 +126,22 @@ export const AgregarProductosComponent = () => {
               {...form.register("marca")}
             />
             <TextField
+              label="Modelo"
+              variant="outlined"
+              fullWidth
+              {...form.register("modelo")}
+            />
+            <TextField
               label="Descripción"
               variant="outlined"
               fullWidth
               {...form.register("descripcion")}
+            />
+            <TextField
+              label="Detalle"
+              variant="outlined"
+              fullWidth
+              {...form.register("detalle")}
             />
             <TextField
               label="Existencia"

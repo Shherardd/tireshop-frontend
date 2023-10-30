@@ -42,7 +42,7 @@ export const RealizarVentaComponent = () => {
       }
   
       const responseData = await response.json();
-      if(responseData.status == 201){
+      if(responseData.status === 201){
         console.log('Respuesta exitosa:', responseData);
       }
   

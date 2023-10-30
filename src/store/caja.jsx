@@ -39,13 +39,13 @@ export const useCajaStore = create(
           producto.precio_unitario * cantidad;
         set({
           ventaProducto: [
-            objProducto,
             ...get().ventaProducto.filter((p) => p.id !== producto.id),
+            objProducto
           ],
         });
       } else {
         //si no existe, agregarlo
-        set({ ventaProducto: [objProducto, ...get().ventaProducto] });
+        set({ ventaProducto: [...get().ventaProducto,objProducto] });
       }
 
       //console.log(get().ventaProducto);
@@ -71,7 +71,7 @@ export const useCajaStore = create(
       subtotal = total / 1.16;
       iva = total - subtotal;
 
-      efectivo = get().factura.monto_pagado;
+      efectivo = get().factura.monto_pagado || 0;
       cambio = efectivo - total;
 
       set({
